@@ -1,4 +1,3 @@
-import bitboard
 from datetime import datetime
 from copy import deepcopy
 
@@ -54,3 +53,26 @@ class CareTaker:
 
     def __str__(self):
         return ''.join([m.__str__() for m in self.mementos]) + f'Current state index: {self.current_state_index}'
+
+
+class Subject:
+    def __init__(self):
+        self._observers = []
+
+    def attach(self, observer):
+        self._observers.append(observer)
+
+    def detach(self, observer):
+        self._observers.remove(observer)
+
+    def notify(self):
+        for o in self._observers:
+            o.update(self)
+
+
+class Observer:
+    def __init__(self):
+        pass
+
+    def update(self, subject):
+        pass
