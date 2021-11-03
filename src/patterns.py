@@ -4,7 +4,7 @@ from copy import deepcopy
 
 class Memento:
     def __init__(self, state):
-        self.state = deepcopy(state)
+        self.state = state.copy()
         self.date = datetime.now()
 
     @property
@@ -41,18 +41,31 @@ class CareTaker:
 
     def undo(self):
         if not self.mementos or self.current_state_index == 0:
-            return None
+            return False
         self.current_state_index -= 1
         self.originator.set_state(self.mementos[self.current_state_index].state)
+        return True
 
     def redo(self):
         if not self.mementos or self.current_state_index == len(self.mementos) - 1:
-            return None
+            return False
         self.current_state_index += 1
         self.originator.set_state(self.mementos[self.current_state_index].state)
+        return True
+
+    @property
+    def size(self):
+        return len(self.mementos)
 
     def __str__(self):
-        return ''.join([m.__str__() for m in self.mementos]) + f'Current state index: {self.current_state_index}'
+        rep_str = ''
+        for (i, m) in enumerate(self.mementos):
+            if i == self.current_state_index:
+                rep_str += '°°°°°°°°°°°°°\n' + m.__str__() + '\n°°°°°°°°°°°°\n'
+            else:
+                rep_str += m.__str__() + '\n'
+        rep_str += f'Current state index: {self.current_state_index}'
+        return rep_str
 
 
 class Subject:

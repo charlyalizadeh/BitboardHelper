@@ -17,7 +17,6 @@ class Bitboard(Subject):
 
     def set_state(self, state):
         self.bit_array = state.bit_array.copy()
-        self.notify()
 
     def inverse_one(self, coord):
         self.bit_array[coord] = 1 if self.bit_array[coord] == 0 else 0
@@ -118,6 +117,12 @@ class Bitboard(Subject):
             j = - n + (i + 1) * self.shape[1] - 1
             self.set_bit((i, j), int(bit_string[n]))
         self.notify()
+
+    def copy(self):
+        bit_array = self.bit_array.copy()
+        bb = Bitboard(bit_array)
+        bb._observers = self._observers
+        return bb
 
     def __str__(self):
         return self.bit_array.__str__()
