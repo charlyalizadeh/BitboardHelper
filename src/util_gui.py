@@ -7,8 +7,10 @@ class EntryButton(tk.Frame):
         super().__init__(master, **frame_kwargs)
         self.button = tk.Button(self, text=button_text, **button_kwargs)
         self.entry = tk.Entry(self, **entry_kwargs)
-        self.button.pack(side=tk.RIGHT, expand=True)
-        self.entry.pack(side=tk.LEFT, expand=True)
+        print(button_kwargs)
+        print(entry_kwargs)
+        self.entry.grid(row=0, column=0, sticky='nsew')
+        self.button.grid(row=0, column=1, sticky='nsew')
 
     def get(self):
         return self.entry.get()

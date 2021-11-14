@@ -1,12 +1,14 @@
 import tkinter as tk
 from patterns import CareTaker, Observer
 from utils import get_coord
-from gui import EntryButton
+from util_gui import EntryButton
 
 
 class BitboardGUI(tk.Frame, Observer):
     def __init__(self, master, bitboard, bg='white', fg='black', **kwargs, ):
         tk.Frame.__init__(self, master, bg=bg, **kwargs)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
         Observer.__init__(self)
 
         self.bitboard = bitboard
@@ -22,7 +24,7 @@ class BitboardGUI(tk.Frame, Observer):
             self.buttons[i].configure(command=lambda index=int(i): self._click_button(index))
         for i in range(self.bitboard.shape[0]):
             for j in range(self.bitboard.shape[1]):
-                self.buttons[i * self.bitboard.shape[1] + j].grid(row=i, column=j)
+                self.buttons[i * self.bitboard.shape[1] + j].grid(row=i, column=j, sticky='nsew')
 
         # Action buttons
         self.button_frame = tk.Frame(self, bg=bg)
@@ -38,23 +40,38 @@ class BitboardGUI(tk.Frame, Observer):
         self.decimal_value_label = tk.Label(self, textvariable=self.decimal_value_strvar, bg=bg, fg=fg)
         self.value_entrybtn = EntryButton(self,
                                           button_kwargs={'command': lambda: self.set_bitboard(), 'bg': bg, 'fg': fg},
-                                          entry_kwargs={'bg': fg, 'fg': bg})
+                                          entry_kwargs={'bg': bg, 'fg': fg},
+                                          bg=bg)
 
 
         # Button position
-        self.inverse_btn.grid(row=0, column=0, sticky='')
-        self.set_all_btn.grid(row=0, column=1, sticky='')
-        self.right_shift_btn.grid(row=0, column=2, sticky='')
-        self.left_shift_btn.grid(row=0, column=3, sticky='')
-        self.undo_btn.grid(row=0, column=4, sticky='')
-        self.redo_btn.grid(row=0, column=5, sticky='')
-        self.value_entrybtn.grid(row=0, column=4, sticky='NESW')
+        self.inverse_btn.grid(row=0, column=0, sticky='nsew')
+        self.set_all_btn.grid(row=0, column=1, sticky='nsew')
+        self.right_shift_btn.grid(row=0, column=2, sticky='nsew')
+        self.left_shift_btn.grid(row=0, column=3, sticky='nsew')
+        self.undo_btn.grid(row=0, column=4, sticky='nsew')
+        self.redo_btn.grid(row=0, column=5, sticky='nsew')
+        self.value_entrybtn.grid(row=0, column=4, sticky='nsew')
 
         # Board + Button's Frame position
-        self.value_entrybtn.grid(row=0, column=0)
-        self.decimal_value_label.grid(row=0, column=1)
-        self.board_frame.grid(row=1, column=0, columnspan=2)
-        self.button_frame.grid(row=2, column=0, columnspan=2)
+        self.value_entrybtn.grid(row=0, column=0, sticky='nsew')
+        self.value_entrybtn.columnconfigure(0, weight=1)
+        self.value_entrybtn.rowconfigure(0, weight=1)
+
+        self.decimal_value_label.grid(row=0, column=1, sticky='nsew')
+        self.decimal_value_label.columnconfigure(0, weight=1)
+        self.decimal_value_label.rowconfigure(0, weight=1)
+
+        self.board_frame.grid(row=1, column=0, columnspan=2, sticky='nsew')
+        self.board_frame.columnconfigure(list(range(self.bitboard.shape[1])), weight=1)
+        self.board_frame.rowconfigure(list(range(self.bitboard.shape[0])), weight=1)
+
+        self.button_frame.grid(row=2, column=0, columnspan=2, sticky='nsew')
+        self.button_frame.columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
+
+        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=15)
+
 
     def _update_decimal_value_strvar(self):
         value = self.bitboard.get_value(type='decimal')
@@ -82,7 +99,6 @@ class BitboardGUI(tk.Frame, Observer):
         self._update_decimal_value_strvar()
         if save:
             self.care_taker.save()
-        print(self.care_taker, '\n\n\n')
 
     def set_bitboard(self):
         value = self.value_entrybtn.get()
